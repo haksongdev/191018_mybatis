@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>search4</title>
+<style>
+    table {width:400px; border:1px solid black; border-collapse:collapse;}
+    td, th{border:1px solid black; text-align:center;}
+    table>thead>tr {color:yellow; background-color:purple;}
+</style>
+<link rel="stylesheet" type="text/css" href="/jpaginate/style.css" />
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.js"></script>
+<script type="text/javascript" src="https://www.jsviews.com/download/jsrender.js"></script>
+<script src="/jpaginate/jquery.paginate.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var pageList = function(){
+        $("#paging").paginate({
+            count:10,
+            start:1,
+            display:10,
+            border:true,
+            border_color : '#333333',
+            text_color : '#000000',
+            background_color : '#cb842e',
+            border_hover_color : '#ccc',
+            text_hover_color : '#000',
+            background_hover_color : '#fff',
+            images:false,
+            mouse : 'press',
+            onChange : function(pageNo){
+                $("#pageNo").val(pageNo);
+                viewList();
+            }
+        });
+    }
+    
+    var viewList = function(){
+        $.ajax({
+            url:"http://localhost:9090/search.do",
+            type:"GET",
+            data:$("#f1").serialize(),
+            success:function(data){
+                var tmpl = $.templates("#member_template");
+                var str = tmpl.render(data);
+                $("#container").html(str);
+            }
+        });
+    };
+    
+    $("#search").click(function(){
+        $("#pageNo").val("1");
+        viewList();
+        pageList();
+    })
+    
+    viewList();
+    pageList();
+    
+
+    <!-- 코드를 완성하세요 -->
+    
+});
+
+</script>
+<script id="member_template" type="text/x-jsrender">
+<tr>
+   <td>{{:id}}</td>
+   <td>{{:passwd}}</td>
+   <td>{{:name}}</td>
+   <td>{{:mail}}</td>
+   <td>
+      <button data-id="{{:id}}" class="delete">삭제</button>
+   </td>
+</tr>
+
+</script>
+
+</head>
+<body>
+   <form id="f1">
+        <select name="condition">
+            <option value="all">ALL</option>
+            <option value="id">ID</option>
+            <option value="name">이름</option>
+        </select>
+        <input type="text" name="keyword">
+        <button type="button" id="search">검색</button>
+        <input type="hidden" id="pageNo" name="pageNo" value="1">
+  </form><p>
+
+<table>
+   <thead>
+       <tr><th>ID</th><th>비밀번호</th><th>이름</th><th>mail</th><th>기능</th></tr>
+   </thead>
+   <tbody id="container">
+   
+   </tbody>
+</table>
+   <div id="paging"></div>
+</body>
+</html>
+
